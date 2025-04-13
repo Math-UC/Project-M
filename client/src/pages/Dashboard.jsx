@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import { auth } from 'src/firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import dino from 'assets/test-dino.jpg';
 import Layout from "src/Layout";
 
 function Dashboard() {
+    const navigate = useNavigate();
     const [user, setUser] = useState(null);
 
     useEffect(() => {
@@ -22,6 +24,7 @@ function Dashboard() {
     if (!user) return <p>Loading...</p>;
 
     return (
+        <Layout>
             <div className="flex flex-col items-center justify-center w-full min-h-screen overflow-x-hidden text-center">
                 <div style={styles.container}>
                     <h1 style={styles.header}>Hi, {user.displayName || "User"} 👋</h1>
@@ -44,11 +47,9 @@ function Dashboard() {
                             Feed him money
                         </button>
                     </div>
-                    <div>
-                        <p style={styles.email}>Email: {user.money}</p>
-                    </div>
                 </div>
             </div>
+        </Layout>
     );
 }
 
