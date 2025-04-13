@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from "react-router-dom";
 import { auth } from 'src/firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import dino from 'assets/test-dino.jpg';
 import Layout from "src/Layout";
 
 function Dashboard() {
-    const navigate = useNavigate();
     const [user, setUser] = useState(null);
 
     useEffect(() => {
