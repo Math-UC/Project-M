@@ -7,6 +7,7 @@ import Dashboard from 'pages/Dashboard.jsx';
 import Choose from 'pages/ChooseDino.jsx';
 import MyDinosaurPage from 'pages/MyDino';
 import Finances from 'pages/Finances';
+import Missions from 'pages/Missions';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -33,6 +34,7 @@ function App() {
         <Route path="/choose" element={user ? <Choose /> : <Navigate to="/login" />} />
         <Route path="/my-dino" element={user ? <MyDinosaurPage /> : <Navigate to="/login" />} />
         <Route path="/finances" element={user ? <Finances /> : <Navigate to="/login" />} />
+        <Route path="/missions" element={user ? <Missions /> : <Navigate to="/login" />} />
       </Routes>
     </Router>
   );
