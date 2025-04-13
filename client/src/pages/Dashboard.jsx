@@ -22,7 +22,6 @@ function Dashboard() {
     if (!user) return <p>Loading...</p>;
 
     return (
-        <Layout>
             <div className="flex flex-col items-center justify-center w-full min-h-screen overflow-x-hidden text-center">
                 <div style={styles.container}>
                     <h1 style={styles.header}>Hi, {user.displayName || "User"} 👋</h1>
@@ -50,7 +49,6 @@ function Dashboard() {
                     </div>
                 </div>
             </div>
-        </Layout>
     );
 }
 
