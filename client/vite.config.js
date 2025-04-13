@@ -11,7 +11,8 @@ export default defineConfig({
       pages: path.resolve(__dirname, 'src/pages'),
       components: path.resolve(__dirname, 'src/components'),
       utils: path.resolve(__dirname, 'src/utils'),
-      // assets: path.resolve(__dirname, 'src/assets'),
+      assets: path.resolve(__dirname, 'src/assets'),
+      images: path.resolve(__dirname, 'src/images'),
       // Add more aliases as needed
     },
   },
