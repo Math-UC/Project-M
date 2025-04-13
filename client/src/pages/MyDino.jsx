@@ -3,6 +3,7 @@ import { auth, db } from 'src/firebase';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { LinearProgress, Box, Typography, Button } from '@mui/material';
+import Layout from "src/Layout";
 
 function MyDinosaurPage() {
     const [user, setUser] = useState(null);
@@ -100,51 +101,54 @@ function MyDinosaurPage() {
     const xpPercent = (dino.xp / dino.max_xp) * 100;
 
     return (
-        <Box p={4}>
-            <Typography variant="h4" gutterBottom>Welcome, {user.displayName}</Typography>
-            <Typography variant="h5" gutterBottom>Your Dinosaur: {dino.name}</Typography>
-            <Typography variant="body1">Type: {dino.type}</Typography>
-            <Typography variant="body1">Level: {dino.level}</Typography>
+        <Layout>
+            <Box p={4}>
+                <Typography variant="h4" gutterBottom>Welcome, {user.displayName}</Typography>
+                <Typography variant="h5" gutterBottom>Your Dinosaur: {dino.name}</Typography>
+                <Typography variant="body1">Type: {dino.type}</Typography>
+                <Typography variant="body1">Level: {dino.level}</Typography>
 
-            {/* Health Bar */}
-            <Box my={2}>
-                <Typography variant="body2">Health: {dino.health}/{dino.max_health}</Typography>
-                <LinearProgress
-                    variant="determinate"
-                    value={healthPercent}
-                    color="error"
-                    sx={{ height: 10, borderRadius: 5 }}
-                />
-            </Box>
+                {/* Health Bar */}
+                <Box my={2}>
+                    <Typography variant="body2">Health: {dino.health}/{dino.max_health}</Typography>
+                    <LinearProgress
+                        variant="determinate"
+                        value={healthPercent}
+                        color="error"
+                        sx={{ height: 10, borderRadius: 5 }}
+                    />
+                </Box>
 
-            {/* Hunger Bar */}
-            <Box my={2}>
-                <Typography variant="body2">Hunger: {dino.hunger}/{dino.max_hunger}</Typography>
-                <LinearProgress
-                    variant="determinate"
-                    value={hungerPercent}
-                    color="warning"
-                    sx={{ height: 10, borderRadius: 5 }}
-                />
-            </Box>
+                {/* Hunger Bar */}
+                <Box my={2}>
+                    <Typography variant="body2">Hunger: {dino.hunger}/{dino.max_hunger}</Typography>
+                    <LinearProgress
+                        variant="determinate"
+                        value={hungerPercent}
+                        color="warning"
+                        sx={{ height: 10, borderRadius: 5 }}
+                    />
+                </Box>
 
-            {/* XP Bar */}
-            <Box my={2}>
-                <Typography variant="body2">XP: {dino.xp}/{dino.max_xp}</Typography>
-                <LinearProgress
-                    variant="determinate"
-                    value={xpPercent}
-                    color="primary"
-                    sx={{ height: 10, borderRadius: 5 }}
-                />
-            </Box>
+                {/* XP Bar */}
+                <Box my={2}>
+                    <Typography variant="body2">XP: {dino.xp}/{dino.max_xp}</Typography>
+                    <LinearProgress
+                        variant="determinate"
+                        value={xpPercent}
+                        color="primary"
+                        sx={{ height: 10, borderRadius: 5 }}
+                    />
+                </Box>
 
-            {/* Action Buttons */}
-            <Box mt={3} display="flex" gap={2}>
-                <Button variant="contained" color="success" onClick={handleFeed}>Feed</Button>
-                <Button variant="outlined" onClick={handleTrain}>Train</Button>
+                {/* Action Buttons */}
+                <Box mt={3} display="flex" gap={2}>
+                    <Button variant="contained" color="success" onClick={handleFeed}>Feed</Button>
+                    <Button variant="outlined" onClick={handleTrain}>Train</Button>
+                </Box>
             </Box>
-        </Box>
+        </Layout>
+
     );
 }
 
