@@ -4,6 +4,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from 'pages/Login.jsx';
 import Dashboard from 'pages/Dashboard.jsx';
+import ChooseDino from 'pages/ChooseDino.jsx';
 
 function App() {
   const [user, setUser] = useState(null);
