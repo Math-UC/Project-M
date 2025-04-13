@@ -36,7 +36,6 @@ document.querySelectorAll(".dino").forEach(img => {
 function selectDino(color) {
   selectedDino = color;
 
-  // Reset all dinos to neutral first
   document.querySelectorAll(".dino").forEach(img => {
     const c = img.dataset.color;
     img.src = dinoImages[c].neutral;
