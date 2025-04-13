@@ -1,4 +1,3 @@
-// src/pages/Finances.jsx
 import React, { useState, useEffect } from 'react';
 import CreatableSelect from 'react-select/creatable';
 import { db, auth } from '../firebase';
@@ -14,6 +13,20 @@ import {
     getDoc,
 } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
+import {
+    Box,
+    Typography,
+    TextField,
+    Button,
+    Card,
+    List,
+    ListItem,
+    ListItemText,
+    IconButton,
+    Grid,
+} from '@mui/material';
+import { Edit, Delete } from '@mui/icons-material';
+import Layout from '../Layout';
 
 function EntrySection({
     title,
@@ -30,39 +43,46 @@ function EntrySection({
     onDelete,
 }) {
     return (
-        <div>
-            <h3>{title}</h3>
-            <input
-                type="number"
-                placeholder="Amount"
-                value={newAmount}
-                onChange={(e) => setNewAmount(e.target.value)}
-            />
-            <CreatableSelect
-                options={categories.map((cat) => ({ value: cat, label: cat }))}
-                onChange={(option) => setCategory(option?.value || '')}
-                value={category ? { label: category, value: category } : null}
-                isClearable
-                isSearchable
-                placeholder="Select or type category"
-            />
-            <input
-                type="text"
-                placeholder="Description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-            />
-            <button onClick={onAdd}>Add</button>
-            <ul>
+        <Card sx={{ width: '100%', height: '100%', p: 2, display: 'flex', flexDirection: 'column' }}>
+            <Typography variant="h6" gutterBottom>{title}</Typography>
+            <Box display="flex" flexDirection="column" gap={2}>
+                <TextField
+                    label="Amount"
+                    type="number"
+                    value={newAmount}
+                    onChange={(e) => setNewAmount(e.target.value)}
+                />
+                <CreatableSelect
+                    options={categories.map((cat) => ({ value: cat, label: cat }))}
+                    onChange={(option) => setCategory(option?.value || '')}
+                    value={category ? { label: category, value: category } : null}
+                    isClearable
+                    isSearchable
+                    placeholder="Select or type category"
+                />
+                <TextField
+                    label="Description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                />
+                <Button variant="contained" onClick={onAdd}>Add</Button>
+            </Box>
+            <List>
                 {entries.map((entry) => (
-                    <li key={entry.id}>
-                        {title === 'Income' ? '+' : '-'} ${entry.amount} ({entry.category}) - {entry.description}
-                        <button onClick={() => onEdit(entry)}>✏️</button>
-                        <button onClick={() => onDelete(entry.id)}>🗑️</button>
-                    </li>
+                    <ListItem key={entry.id} secondaryAction={
+                        <>
+                            <IconButton onClick={() => onEdit(entry)}><Edit /></IconButton>
+                            <IconButton onClick={() => onDelete(entry.id)}><Delete /></IconButton>
+                        </>
+                    }>
+                        <ListItemText
+                            primary={`${title === 'Income' ? '+' : '-'} $${entry.amount} (${entry.category})`}
+                            secondary={entry.description}
+                        />
+                    </ListItem>
                 ))}
-            </ul>
-        </div>
+            </List>
+        </Card>
     );
 }
 
@@ -181,66 +201,77 @@ function Finances() {
     }, [user]);
 
     return (
-        <div style={{ padding: '2rem' }}>
-            <h1>🪙 Finances</h1>
-            <h2>Net Balance: ${net.toFixed(2)}</h2>
-            <div style={{ display: 'flex', gap: '2rem' }}>
-                <EntrySection
-                    title="Income"
-                    entries={incomeEntries}
-                    newAmount={newIncome}
-                    setNewAmount={setNewIncome}
-                    category={incomeCategory}
-                    setCategory={setIncomeCategory}
-                    description={incomeDescription}
-                    setDescription={setIncomeDescription}
-                    categories={incomeCategories}
-                    onAdd={addIncome}
-                    onEdit={(entry) => startEditing('income', entry)}
-                    onDelete={(id) => deleteEntry('income', id)}
-                />
-                <EntrySection
-                    title="Expenses"
-                    entries={expenseEntries}
-                    newAmount={newExpense}
-                    setNewAmount={setNewExpense}
-                    category={expenseCategory}
-                    setCategory={setExpenseCategory}
-                    description={expenseDescription}
-                    setDescription={setExpenseDescription}
-                    categories={expenseCategories}
-                    onAdd={addExpense}
-                    onEdit={(entry) => startEditing('expenses', entry)}
-                    onDelete={(id) => deleteEntry('expenses', id)}
-                />
-            </div>
+        <Layout>
+            <Box sx={{ p: 4 }}>
+                <Typography variant="h4" gutterBottom>🪙 Finances</Typography>
+                <Typography variant="h6" gutterBottom>Net Balance: ${net.toFixed(2)}</Typography>
+                <Grid container spacing={2}>
+                    <Grid size={6} sx={{ display: 'flex' }}>
+                        <EntrySection
+                            title="Income"
+                            entries={incomeEntries}
+                            newAmount={newIncome}
+                            setNewAmount={setNewIncome}
+                            category={incomeCategory}
+                            setCategory={setIncomeCategory}
+                            description={incomeDescription}
+                            setDescription={setIncomeDescription}
+                            categories={incomeCategories}
+                            onAdd={addIncome}
+                            onEdit={(entry) => startEditing('income', entry)}
+                            onDelete={(id) => deleteEntry('income', id)}
+                        />
+                    </Grid>
+                    <Grid size={6} sx={{ display: 'flex' }}>
+                        <EntrySection
+                            title="Expenses"
+                            entries={expenseEntries}
+                            newAmount={newExpense}
+                            setNewAmount={setNewExpense}
+                            category={expenseCategory}
+                            setCategory={setExpenseCategory}
+                            description={expenseDescription}
+                            setDescription={setExpenseDescription}
+                            categories={expenseCategories}
+                            onAdd={addExpense}
+                            onEdit={(entry) => startEditing('expenses', entry)}
+                            onDelete={(id) => deleteEntry('expenses', id)}
+                        />
+                    </Grid>
+                </Grid>
 
-            {editingEntry && (
-                <div style={{ marginTop: '2rem', border: '1px solid #ccc', padding: '1rem' }}>
-                    <h3>Edit Entry</h3>
-                    <input
-                        type="number"
-                        value={editingEntry.amount}
-                        onChange={(e) => setEditingEntry({ ...editingEntry, amount: e.target.value })}
-                    />
-                    <CreatableSelect
-                        options={(editingType === 'income' ? incomeCategories : expenseCategories).map((cat) => ({ value: cat, label: cat }))}
-                        onChange={(option) => setEditingEntry({ ...editingEntry, category: option?.value || '' })}
-                        value={editingEntry.category ? { label: editingEntry.category, value: editingEntry.category } : null}
-                        isClearable
-                        isSearchable
-                        placeholder="Select or type category"
-                    />
-                    <input
-                        type="text"
-                        value={editingEntry.description}
-                        onChange={(e) => setEditingEntry({ ...editingEntry, description: e.target.value })}
-                    />
-                    <button onClick={saveEdit}>Save</button>
-                    <button onClick={() => setEditingEntry(null)}>Cancel</button>
-                </div>
-            )}
-        </div>
+                {editingEntry && (
+                    <Box mt={4} p={2} border="1px solid #ccc" borderRadius={2}>
+                        <Typography variant="h6">Edit Entry</Typography>
+                        <Box display="flex" flexDirection="column" gap={2} mt={2}>
+                            <TextField
+                                label="Amount"
+                                type="number"
+                                value={editingEntry.amount}
+                                onChange={(e) => setEditingEntry({ ...editingEntry, amount: e.target.value })}
+                            />
+                            <CreatableSelect
+                                options={(editingType === 'income' ? incomeCategories : expenseCategories).map((cat) => ({ value: cat, label: cat }))}
+                                onChange={(option) => setEditingEntry({ ...editingEntry, category: option?.value || '' })}
+                                value={editingEntry.category ? { label: editingEntry.category, value: editingEntry.category } : null}
+                                isClearable
+                                isSearchable
+                                placeholder="Select or type category"
+                            />
+                            <TextField
+                                label="Description"
+                                value={editingEntry.description}
+                                onChange={(e) => setEditingEntry({ ...editingEntry, description: e.target.value })}
+                            />
+                            <Box display="flex" gap={2}>
+                                <Button variant="contained" onClick={saveEdit}>Save</Button>
+                                <Button variant="outlined" onClick={() => setEditingEntry(null)}>Cancel</Button>
+                            </Box>
+                        </Box>
+                    </Box>
+                )}
+            </Box>
+        </Layout>
     );
 }
 
