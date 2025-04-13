@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Select from 'react-select';
 import { db, auth } from '../firebase';
 import {
     collection,
@@ -139,7 +140,15 @@ function Finances() {
                 <div>
                     <h3>Income</h3>
                     <input type="number" placeholder="Amount" value={newIncome} onChange={(e) => setNewIncome(e.target.value)} />
-                    <input type="text" placeholder="Category" value={incomeCategory} onChange={(e) => setIncomeCategory(e.target.value)} />
+                    <Select
+                        options={incomeCategories.map((cat) => ({ value: cat, label: cat }))}
+                        onChange={(option) => setIncomeCategory(option?.value || '')}
+                        onInputChange={(input) => setIncomeCategory(input)}
+                        value={incomeCategory ? { label: incomeCategory, value: incomeCategory } : null}
+                        isClearable
+                        isSearchable
+                        placeholder="Select or type category"
+                    />
                     <input type="text" placeholder="Description" value={incomeDescription} onChange={(e) => setIncomeDescription(e.target.value)} />
                     <button onClick={addIncome}>Add</button>
                     <ul>
@@ -156,7 +165,15 @@ function Finances() {
                 <div>
                     <h3>Expenses</h3>
                     <input type="number" placeholder="Amount" value={newExpense} onChange={(e) => setNewExpense(e.target.value)} />
-                    <input type="text" placeholder="Category" value={expenseCategory} onChange={(e) => setExpenseCategory(e.target.value)} />
+                    <Select
+                        options={expenseCategories.map((cat) => ({ value: cat, label: cat }))}
+                        onChange={(option) => setExpenseCategory(option?.value || '')}
+                        onInputChange={(input) => setExpenseCategory(input)}
+                        value={expenseCategory ? { label: expenseCategory, value: expenseCategory } : null}
+                        isClearable
+                        isSearchable
+                        placeholder="Select or type category"
+                    />
                     <input type="text" placeholder="Description" value={expenseDescription} onChange={(e) => setExpenseDescription(e.target.value)} />
                     <button onClick={addExpense}>Add</button>
                     <ul>
