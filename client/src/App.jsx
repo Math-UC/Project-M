@@ -4,6 +4,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from 'pages/Login.jsx';
 import Dashboard from 'pages/Dashboard.jsx';
+import Choose from 'pages/ChooseDino.jsx';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -27,6 +28,7 @@ function App() {
         />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/login" />} />
+        <Route path="/choose" element={user ? <Choose /> : <Navigate to="/login" />} />
       </Routes>
     </Router>
   );
