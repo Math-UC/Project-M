@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
+import { getFirestore, doc, collection, setDoc, getDoc, addDoc } from "firebase/firestore";
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "firebase/auth";
 
 const firebaseConfig = {
@@ -26,12 +26,25 @@ const signInWithGoogle = async () => {
         const userSnap = await getDoc(userRef);
 
         if (!userSnap.exists()) {
+            // 1. Create new dinosaur document
+            const dinoRef = await addDoc(collection(db, 'dinos'), {
+                name: null,
+                type: null,
+                level: 1,
+                health: 100,
+                hunger: 100,
+                exp: 0,
+            });
+
+            // 2. Create the user document with the reference to the dino
             await setDoc(userRef, {
                 name: user.displayName,
                 email: user.email,
                 createdAt: new Date(),
+                money: 0, // initialize money
+                dinosaur: dinoRef, // reference to the dino document
                 preferences: {
-                    theme: "light",
+                    theme: "dark",
                     notifications: true,
                 },
             });
