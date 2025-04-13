@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { auth, db } from 'src/firebase'; // adjust path as needed
+import { auth, db } from 'src/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
+import { LinearProgress, Box, Typography, Button } from '@mui/material';
 
 function MyDinosaurPage() {
     const [user, setUser] = useState(null);
@@ -16,13 +17,12 @@ function MyDinosaurPage() {
                 const userDocSnap = await getDoc(doc(db, 'users', currentUser.uid));
                 const userData = userDocSnap.data();
 
-                const dinoRef = userData?.dinosaur; // <- reference field from Firestore
+                const dinoRef = userData?.dinosaur;
 
                 if (dinoRef) {
-                    const dinoSnap = await getDoc(dinoRef); // dereference the doc
+                    const dinoSnap = await getDoc(dinoRef);
                     const dinoData = dinoSnap.data();
 
-                    // 🔁 Ensure hunger is treated as a number (in case it's a string)
                     if (typeof dinoData.hunger === 'string') {
                         dinoData.hunger = parseInt(dinoData.hunger);
                     }
@@ -38,28 +38,53 @@ function MyDinosaurPage() {
     }, []);
 
     const handleFeed = () => {
-        // You could update the dinosaur document here to adjust hunger
         console.log('Feed action triggered');
     };
 
     if (loading) return <p>Loading...</p>;
     if (!user || !dino) return <p>No dinosaur found.</p>;
 
-    return (
-        <div>
-            <h1>Welcome, {user.displayName}</h1>
-            <h2>Your Dinosaur: {dino.name}</h2>
-            <p>Type: {dino.type}</p>
-            <p>Level: {dino.level}</p>
-            <p>Health: {dino.health}</p>
-            <p>Hunger: {dino.hunger}</p>
+    const maxHealth = dino.level * 100;
+    const maxXP = dino.level * 100;
 
-            <div>
-                <button onClick={handleFeed}>Feed</button>
-                <button onClick={() => console.log('Train clicked')}>Train</button>
-                <button onClick={() => console.log('Play clicked')}>Play</button>
-            </div>
-        </div>
+    const healthPercent = (dino.health / maxHealth) * 100;
+    const xpPercent = (dino.xp / maxXP) * 100;
+
+    return (
+        <Box p={4}>
+            <Typography variant="h4" gutterBottom>Welcome, {user.displayName}</Typography>
+            <Typography variant="h5" gutterBottom>Your Dinosaur: {dino.name}</Typography>
+            <Typography variant="body1">Type: {dino.type}</Typography>
+            <Typography variant="body1">Level: {dino.level}</Typography>
+
+            {/* Health Bar */}
+            <Box my={2}>
+                <Typography variant="body2">Health: {dino.health}/{maxHealth}</Typography>
+                <LinearProgress
+                    variant="determinate"
+                    value={healthPercent}
+                    color="error"
+                    sx={{ height: 10, borderRadius: 5 }}
+                />
+            </Box>
+
+            {/* XP Bar */}
+            <Box my={2}>
+                <Typography variant="body2">XP: {dino.xp}/{maxXP}</Typography>
+                <LinearProgress
+                    variant="determinate"
+                    value={xpPercent}
+                    color="primary"
+                    sx={{ height: 10, borderRadius: 5 }}
+                />
+            </Box>
+
+            {/* Action Buttons */}
+            <Box mt={3} display="flex" gap={2}>
+                <Button variant="contained" color="success" onClick={handleFeed}>Feed</Button>
+                <Button variant="outlined" onClick={() => console.log('Train clicked')}>Train</Button>
+            </Box>
+        </Box>
     );
 }
 

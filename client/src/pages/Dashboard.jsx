@@ -1,15 +1,27 @@
 import { useEffect, useState } from 'react';
-import { auth } from 'src/firebase';
+import { auth, db } from 'src/firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 import dino from 'assets/test-dino.jpg';
 import Layout from "src/Layout";
 
 function Dashboard() {
     const [user, setUser] = useState(null);
+    const [money, setMoney] = useState(null); // 💰 new state to store money
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             setUser(currentUser);
+
+            if (currentUser) {
+                const userDocRef = doc(db, 'users', currentUser.uid);
+                const userDoc = await getDoc(userDocRef);
+
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    setMoney(userData.money); // 👈 set the money from the database
+                }
+            }
         });
 
         return () => unsubscribe();
@@ -27,6 +39,7 @@ function Dashboard() {
                 <div style={styles.container}>
                     <h1 style={styles.header}>Hi, {user.displayName || "User"} 👋</h1>
                     <p style={styles.email}>Email: {user.email}</p>
+                    <p style={styles.money}>Money: {money !== null ? `$${money}` : 'Loading...'}</p> {/* 💸 Display money */}
                     <button onClick={handleSignOut} style={styles.button}>Sign Out</button>
                 </div>
                 <div className="flex flex-col items-center justify-center gap-2 p-8 sm:flex-row sm:items-center sm:gap-6 sm:py-4 w-full mx-auto">
@@ -34,7 +47,7 @@ function Dashboard() {
                         className="mx-auto block rounded-full sm:mx-0 sm:shrink-0"
                         src={dino}
                         alt=""
-                        style={{ height: '50px', width: '50px' }} // Custom size only, keeping the rest to Tailwind for centering
+                        style={{ height: '50px', width: '50px' }}
                     />
                     <div className="space-y-2 text-center">
                         <div className="space-y-0.5">
@@ -63,6 +76,11 @@ const styles = {
     email: {
         marginTop: '0.5rem',
         color: '#555',
+    },
+    money: {
+        marginTop: '0.5rem',
+        fontSize: '1.2rem',
+        color: '#111',
     },
     button: {
         marginTop: '1rem',

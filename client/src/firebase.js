@@ -33,7 +33,7 @@ const signInWithGoogle = async () => {
                 level: 1,
                 health: 100,
                 hunger: 100,
-                exp: 0,
+                xp: 0,
             });
 
             // 2. Create the user document with the reference to the dino
