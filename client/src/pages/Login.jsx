@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
-import { db, signInWithGoogle } from "./firebase";
+import { db, signInWithGoogle } from "src/firebase";
 
-function App() {
+function LoginPage() {
     return (
         <button onClick={signInWithGoogle}>
             Sign in with Google
@@ -10,4 +10,4 @@ function App() {
     );
 }
 
-export default App;
+export default LoginPage;
