@@ -8,6 +8,7 @@ import {
     Checkbox,
     FormControlLabel,
     CircularProgress,
+    Stack,
 } from '@mui/material';
 import { db, auth } from '../firebase';
 import {
@@ -87,18 +88,38 @@ function Missions() {
                         <Grid key={type} xs={12} md={4}>
                             <Card>
                                 <CardContent>
-                                    <Typography variant="h6" gutterBottom>{type.charAt(0).toUpperCase() + type.slice(1)} Missions</Typography>
+                                    <Typography variant="h6" gutterBottom>
+                                        {type.charAt(0).toUpperCase() + type.slice(1)} Missions
+                                    </Typography>
                                     {missions[type].map((mission) => (
-                                        <FormControlLabel
-                                            key={mission.id}
-                                            control={
-                                                <Checkbox
-                                                    checked={!!userProgress[mission.id]}
-                                                    onChange={() => toggleMission(mission.id)}
-                                                />
-                                            }
-                                            label={mission.title}
-                                        />
+                                        <Box key={mission.id} sx={{ mb: 2, borderBottom: '1px solid #eee', pb: 1 }}>
+                                            <FormControlLabel
+                                                control={
+                                                    <Checkbox
+                                                        checked={!!userProgress[mission.id]}
+                                                        onChange={() => toggleMission(mission.id)}
+                                                    />
+                                                }
+                                                label={
+                                                    <Box>
+                                                        <Typography variant="subtitle1">{mission.title}</Typography>
+                                                        {mission.description && (
+                                                            <Typography variant="body2" color="text.secondary">
+                                                                {mission.description}
+                                                            </Typography>
+                                                        )}
+                                                        <Stack direction="row" spacing={1} mt={0.5}>
+                                                            {mission.xp !== undefined && (
+                                                                <Typography variant="caption">⭐ {mission.xp} XP</Typography>
+                                                            )}
+                                                            {mission.gold !== undefined && (
+                                                                <Typography variant="caption">💰 {mission.gold} Gold</Typography>
+                                                            )}
+                                                        </Stack>
+                                                    </Box>
+                                                }
+                                            />
+                                        </Box>
                                     ))}
                                 </CardContent>
                             </Card>
