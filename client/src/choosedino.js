@@ -28,5 +28,5 @@ continueBtn.addEventListener("click", () => {
   };
 
   localStorage.setItem("userDino", JSON.stringify(userDino));
-  // window.location.href = ".html"; 
+  window.location.href = "intro.html"; 
 });
