@@ -7,7 +7,7 @@ import Layout from "src/Layout";
 
 function Dashboard() {
     const [user, setUser] = useState(null);
-    const [money, setMoney] = useState(null); // 💰 new state to store money
+    const [money, setMoney] = useState(null); // new state to store money
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -19,7 +19,7 @@ function Dashboard() {
 
                 if (userDoc.exists()) {
                     const userData = userDoc.data();
-                    setMoney(userData.money); // 👈 set the money from the database
+                    setMoney(userData.money); // set the money from the database
                 }
             }
         });
@@ -39,7 +39,7 @@ function Dashboard() {
                 <div style={styles.container}>
                     <h1 style={styles.header}>Hi, {user.displayName || "User"} 👋</h1>
                     <p style={styles.email}>Email: {user.email}</p>
-                    <p style={styles.money}>Money: {money !== null ? `$${money}` : 'Loading...'}</p> {/* 💸 Display money */}
+                    <p style={styles.money}>Money: {money !== null ? `$${money}` : 'Loading...'}</p> {/* Display money */}
                     <button onClick={handleSignOut} style={styles.button}>Sign Out</button>
                 </div>
                 <div className="flex flex-col items-center justify-center gap-2 p-8 sm:flex-row sm:items-center sm:gap-6 sm:py-4 w-full mx-auto">
