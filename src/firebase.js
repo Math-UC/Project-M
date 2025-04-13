@@ -35,6 +35,7 @@ const signInWithGoogle = async () => {
                 health: 100,
                 hunger: 100,
                 xp: 0,
+                ownerId: user.uid
             });
 
             // 2. Create the user document with the reference to the dino

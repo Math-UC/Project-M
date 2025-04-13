@@ -1,13 +1,25 @@
-import { AppBar, Box, Button, IconButton, Toolbar, Typography, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import {
+  AppBar,
+  Box,
+  Button,
+  IconButton,
+  Toolbar,
+  Typography,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText
+} from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import AddIcon from '@mui/icons-material/Add';
-import { useState } from 'react';
-import { useNavigate } from "react-router-dom";
 import SavingsIcon from '@mui/icons-material/Savings';
+import { useNavigate } from 'react-router-dom';
 import { auth, db } from 'src/firebase';
 import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
-import { useEffect } from 'react';
 
 const Layout = ({ children }) => {
   const navigate = useNavigate();
@@ -19,104 +31,76 @@ const Layout = ({ children }) => {
   };
 
   useEffect(() => {
-    let unsubscribeUser = () => { };
-
-    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         const userDocRef = doc(db, 'users', user.uid);
-
-        // Listen to money changes in real-time
-        unsubscribeUser = onSnapshot(userDocRef, (docSnap) => {
+        onSnapshot(userDocRef, (docSnap) => {
           if (docSnap.exists()) {
-            const userData = docSnap.data();
-            setMoney(userData?.money ?? 0);
+            setMoney(docSnap.data().money);
           }
         });
       }
     });
-
-    return () => {
-      unsubscribeAuth();   // stop listening to auth
-      unsubscribeUser();   // stop listening to user doc
-    };
+    return () => unsubscribe();
   }, []);
 
-  const DrawerList = (
-    <Box sx={{ width: 250 }} role="presentation" onClick={handleDrawerToggle}>
-      <List>
-        {['Page 1', 'Page 2', 'Page 3', 'Page 4'].map((text) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                <AddIcon />
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-    </Box>
-  );
-
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 flex flex-col">
-      <header>
-        <Box sx={{ flexGrow: 1 }}>
-          <AppBar position="static">
-            <Toolbar>
-
-              <IconButton
-                size="large"
-                edge="start"
-                color="inherit"
-                aria-label="menu"
-                sx={{ mr: 2 }}
-                onClick={handleDrawerToggle}
-              >
-                <MenuIcon />
-              </IconButton>
-
-              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                News
-              </Typography>
-
-              {/* 💰 Money Display */}
-              {money !== null && (
-                <Box display="flex" alignItems="center" mr={2}>
-                  <SavingsIcon sx={{ mr: 0.5 }} />
-                  <Typography variant="body1">
-                    ${money.toLocaleString()}
-                  </Typography>
-                </Box>
-              )}
-
-              <Button
-                color="inherit"
-                onClick={() => navigate("/dashboard")}
-              >
-                Home
-              </Button>
-            </Toolbar>
-          </AppBar>
-
-          <Drawer
-            anchor="left"
-            open={isDrawerOpen}
-            onClose={handleDrawerToggle}
+    <Box sx={{ display: 'flex' }}>
+      <AppBar position="fixed">
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={handleDrawerToggle}
+            edge="start"
+            sx={{ mr: 2 }}
           >
-            {DrawerList}
-          </Drawer>
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+            Dino Finance
+          </Typography>
+          <Typography variant="body1">
+            {money !== null ? `Money: $${money}` : 'Loading money...'}
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <Drawer anchor="left" open={isDrawerOpen} onClose={handleDrawerToggle}>
+        <Box sx={{ width: 250 }} role="presentation" onClick={handleDrawerToggle}>
+          <List>
+            <ListItem disablePadding>
+              <ListItemButton onClick={() => navigate('/finances')}>
+                <ListItemIcon>
+                  <SavingsIcon />
+                </ListItemIcon>
+                <ListItemText primary="Finances" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton onClick={() => navigate('/missions')}>
+                <ListItemIcon>
+                  <AddIcon />
+                </ListItemIcon>
+                <ListItemText primary="Missions" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton onClick={() => navigate('/my-dino')}>
+                <ListItemText primary="Dino" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton onClick={() => navigate('/page-2')}>
+                <ListItemText primary="Sign Out" />
+              </ListItemButton>
+            </ListItem>
+          </List>
         </Box>
-      </header>
-
-      <main className="flex-1 w-full max-w-4xl mx-auto p-4">
+      </Drawer>
+      <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 8 }}>
         {children}
-      </main>
-
-      <footer className="w-full p-4 text-center text-sm text-gray-500">
-        Project M - Bitcamp 2025
-      </footer>
-    </div>
+      </Box>
+    </Box>
   );
 };
 
