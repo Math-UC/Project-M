@@ -5,7 +5,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from 'pages/Login.jsx';
 import Dashboard from 'pages/Dashboard.jsx';
-import ChooseDino from 'pages/ChooseDino.jsx';
+import ChooseDino from 'pages/ChooseDino.jsx';  // Import the ChooseDino page for new users
 
 function App() {
   const [user, setUser] = useState(null);
@@ -17,12 +17,16 @@ function App() {
       if (currentUser) {
         setUser(currentUser);
 
+        // Check if the user exists in Firestore
         const userRef = doc(db, 'users', currentUser.uid);
         const userSnap = await getDoc(userRef);
 
         if (!userSnap.exists()) {
-          // If user doc doesn't exist then new user
+          // If user doesn't exist in Firestore → new user
           setIsNewUser(true);
+        } else {
+          // If user exists in Firestore → existing user
+          setIsNewUser(false);
         }
       } else {
         setUser(null);
