@@ -19,7 +19,7 @@ import SavingsIcon from '@mui/icons-material/Savings';
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from 'src/firebase';
 import { doc, getDoc, onSnapshot } from 'firebase/firestore';
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 
 const Layout = ({ children }) => {
   const navigate = useNavigate();
@@ -28,6 +28,10 @@ const Layout = ({ children }) => {
 
   const handleDrawerToggle = () => {
     setIsDrawerOpen(!isDrawerOpen);
+  };
+
+  const handleSignOut = async () => {
+    await signOut(auth);
   };
 
   useEffect(() => {
@@ -90,7 +94,7 @@ const Layout = ({ children }) => {
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-              <ListItemButton onClick={() => navigate('/page-2')}>
+              <ListItemButton onClick={handleSignOut}>
                 <ListItemText primary="Sign Out" />
               </ListItemButton>
             </ListItem>

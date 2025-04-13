@@ -40,8 +40,53 @@ function MyDinosaurPage() {
         return () => unsubscribe();
     }, []);
 
-    const handleFeed = () => {
-        console.log('Feed action triggered');
+    const handleFeed = async () => {
+        const xpGain = 25;
+        const moneyCost = 200;
+
+        if (!user || !dino || !dinoRef) return;
+
+        try {
+            const userDocRef = doc(db, 'users', user.uid);
+            const userDocSnap = await getDoc(userDocRef);
+            const userData = userDocSnap.data();
+
+            if (!userData || userData.money < moneyCost) {
+                alert('Not enough money to feed!');
+                return;
+            }
+
+            // Calculate new dino stats
+            const newHealth = Math.min(dino.max_health, dino.health + 0.1 * dino.max_health);
+            const newHunger = Math.min(dino.max_hunger, dino.hunger + 0.2 * dino.max_hunger);
+            const newXP = dino.xp + xpGain;
+            const newMoney = userData.money - moneyCost;
+
+            // Update both user money and dino stats
+            await Promise.all([
+                updateDoc(dinoRef, {
+                    health: newHealth,
+                    hunger: newHunger,
+                    xp: newXP
+                }),
+                updateDoc(userDocRef, {
+                    money: newMoney
+                })
+            ]);
+
+            // Update local state
+            setDino(prev => ({
+                ...prev,
+                health: newHealth,
+                hunger: newHunger,
+                xp: newXP
+            }));
+
+            console.log('Feeding complete!');
+        } catch (error) {
+            console.error('Error during feeding:', error);
+            alert('Feeding failed.');
+        }
     };
 
     const handleTrain = async () => {

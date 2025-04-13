@@ -37,7 +37,7 @@ function LoginPage() {
                     alt="App Logo"
                     className="mx-auto w-24 h-24 mb-6 rounded-full shadow-md"
                 />
-                <h1 className="text-2xl font-bold text-gray-800 mb-4">Welcome to FinPet 🐾</h1>
+                <h1 className="text-2xl font-bold text-gray-800 mb-4">Welcome to Dino Money 🐾</h1>
                 <p className="text-gray-600 mb-8">Sign in to get started with your finance buddy!</p>
                 <button
                     onClick={signInWithGoogle}

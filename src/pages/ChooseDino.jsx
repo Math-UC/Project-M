@@ -3,16 +3,16 @@ import { useNavigate } from 'react-router-dom';
 
 const dinoImages = {
   red: {
-    neutral: 'red-neutral.png',
-    happy: 'red-happy.png'
+    neutral: 'src/assets/images/dino1.png',
+    happy: 'src/assets/images/dino1.png'
   },
   blue: {
-    neutral: 'blue-neutral.png',
-    happy: 'blue-happy.png'
+    neutral: 'src/assets/images/dino2.png',
+    happy: 'src/assets/images/dino2.png'
   },
   green: {
-    neutral: 'green-neutral.png',
-    happy: 'green-happy.png'
+    neutral: 'src/assets/images/dino3.png',
+    happy: 'src/assets/images/dino3.png'
   }
 };
 
@@ -52,7 +52,7 @@ const ChooseDino = () => {
   };
 
   const handleContinue = () => {
-    navigate('/intro');
+    navigate('/dashboard');
   };
 
   const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
