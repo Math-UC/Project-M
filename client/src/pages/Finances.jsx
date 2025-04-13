@@ -1,5 +1,6 @@
+// src/pages/Finances.jsx
 import React, { useState, useEffect } from 'react';
-import Select from 'react-select';
+import CreatableSelect from 'react-select/creatable';
 import { db, auth } from '../firebase';
 import {
     collection,
@@ -13,6 +14,57 @@ import {
     getDoc,
 } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
+
+function EntrySection({
+    title,
+    entries,
+    newAmount,
+    setNewAmount,
+    category,
+    setCategory,
+    description,
+    setDescription,
+    categories,
+    onAdd,
+    onEdit,
+    onDelete,
+}) {
+    return (
+        <div>
+            <h3>{title}</h3>
+            <input
+                type="number"
+                placeholder="Amount"
+                value={newAmount}
+                onChange={(e) => setNewAmount(e.target.value)}
+            />
+            <CreatableSelect
+                options={categories.map((cat) => ({ value: cat, label: cat }))}
+                onChange={(option) => setCategory(option?.value || '')}
+                value={category ? { label: category, value: category } : null}
+                isClearable
+                isSearchable
+                placeholder="Select or type category"
+            />
+            <input
+                type="text"
+                placeholder="Description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+            />
+            <button onClick={onAdd}>Add</button>
+            <ul>
+                {entries.map((entry) => (
+                    <li key={entry.id}>
+                        {title === 'Income' ? '+' : '-'} ${entry.amount} ({entry.category}) - {entry.description}
+                        <button onClick={() => onEdit(entry)}>✏️</button>
+                        <button onClick={() => onDelete(entry.id)}>🗑️</button>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+}
 
 function Finances() {
     const [user, setUser] = useState(null);
@@ -28,6 +80,10 @@ function Finances() {
     const [expenseDescription, setExpenseDescription] = useState('');
     const [editingEntry, setEditingEntry] = useState(null);
     const [editingType, setEditingType] = useState('');
+
+    const totalIncome = incomeEntries.reduce((acc, entry) => acc + entry.amount, 0);
+    const totalExpenses = expenseEntries.reduce((acc, entry) => acc + entry.amount, 0);
+    const net = totalIncome - totalExpenses;
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -108,24 +164,16 @@ function Finances() {
         await deleteDoc(ref);
     };
 
-    const totalIncome = incomeEntries.reduce((acc, entry) => acc + entry.amount, 0);
-    const totalExpenses = expenseEntries.reduce((acc, entry) => acc + entry.amount, 0);
-    const net = totalIncome - totalExpenses;
-
     useEffect(() => {
         if (!user) return;
-
         const incomeRef = collection(db, 'users', user.uid, 'income');
         const expenseRef = collection(db, 'users', user.uid, 'expenses');
-
         const unsubIncome = onSnapshot(incomeRef, (snapshot) => {
             setIncomeEntries(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
         });
-
         const unsubExpense = onSnapshot(expenseRef, (snapshot) => {
             setExpenseEntries(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
         });
-
         return () => {
             unsubIncome();
             unsubExpense();
@@ -137,55 +185,34 @@ function Finances() {
             <h1>🪙 Finances</h1>
             <h2>Net Balance: ${net.toFixed(2)}</h2>
             <div style={{ display: 'flex', gap: '2rem' }}>
-                <div>
-                    <h3>Income</h3>
-                    <input type="number" placeholder="Amount" value={newIncome} onChange={(e) => setNewIncome(e.target.value)} />
-                    <Select
-                        options={incomeCategories.map((cat) => ({ value: cat, label: cat }))}
-                        onChange={(option) => setIncomeCategory(option?.value || '')}
-                        onInputChange={(input) => setIncomeCategory(input)}
-                        value={incomeCategory ? { label: incomeCategory, value: incomeCategory } : null}
-                        isClearable
-                        isSearchable
-                        placeholder="Select or type category"
-                    />
-                    <input type="text" placeholder="Description" value={incomeDescription} onChange={(e) => setIncomeDescription(e.target.value)} />
-                    <button onClick={addIncome}>Add</button>
-                    <ul>
-                        {incomeEntries.map((entry) => (
-                            <li key={entry.id}>
-                                + ${entry.amount} ({entry.category}) - {entry.description}
-                                <button onClick={() => startEditing('income', entry)}>✏️</button>
-                                <button onClick={() => deleteEntry('income', entry.id)}>🗑️</button>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-
-                <div>
-                    <h3>Expenses</h3>
-                    <input type="number" placeholder="Amount" value={newExpense} onChange={(e) => setNewExpense(e.target.value)} />
-                    <Select
-                        options={expenseCategories.map((cat) => ({ value: cat, label: cat }))}
-                        onChange={(option) => setExpenseCategory(option?.value || '')}
-                        onInputChange={(input) => setExpenseCategory(input)}
-                        value={expenseCategory ? { label: expenseCategory, value: expenseCategory } : null}
-                        isClearable
-                        isSearchable
-                        placeholder="Select or type category"
-                    />
-                    <input type="text" placeholder="Description" value={expenseDescription} onChange={(e) => setExpenseDescription(e.target.value)} />
-                    <button onClick={addExpense}>Add</button>
-                    <ul>
-                        {expenseEntries.map((entry) => (
-                            <li key={entry.id}>
-                                - ${entry.amount} ({entry.category}) - {entry.description}
-                                <button onClick={() => startEditing('expenses', entry)}>✏️</button>
-                                <button onClick={() => deleteEntry('expenses', entry.id)}>🗑️</button>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
+                <EntrySection
+                    title="Income"
+                    entries={incomeEntries}
+                    newAmount={newIncome}
+                    setNewAmount={setNewIncome}
+                    category={incomeCategory}
+                    setCategory={setIncomeCategory}
+                    description={incomeDescription}
+                    setDescription={setIncomeDescription}
+                    categories={incomeCategories}
+                    onAdd={addIncome}
+                    onEdit={(entry) => startEditing('income', entry)}
+                    onDelete={(id) => deleteEntry('income', id)}
+                />
+                <EntrySection
+                    title="Expenses"
+                    entries={expenseEntries}
+                    newAmount={newExpense}
+                    setNewAmount={setNewExpense}
+                    category={expenseCategory}
+                    setCategory={setExpenseCategory}
+                    description={expenseDescription}
+                    setDescription={setExpenseDescription}
+                    categories={expenseCategories}
+                    onAdd={addExpense}
+                    onEdit={(entry) => startEditing('expenses', entry)}
+                    onDelete={(id) => deleteEntry('expenses', id)}
+                />
             </div>
 
             {editingEntry && (
@@ -196,10 +223,13 @@ function Finances() {
                         value={editingEntry.amount}
                         onChange={(e) => setEditingEntry({ ...editingEntry, amount: e.target.value })}
                     />
-                    <input
-                        type="text"
-                        value={editingEntry.category}
-                        onChange={(e) => setEditingEntry({ ...editingEntry, category: e.target.value })}
+                    <CreatableSelect
+                        options={(editingType === 'income' ? incomeCategories : expenseCategories).map((cat) => ({ value: cat, label: cat }))}
+                        onChange={(option) => setEditingEntry({ ...editingEntry, category: option?.value || '' })}
+                        value={editingEntry.category ? { label: editingEntry.category, value: editingEntry.category } : null}
+                        isClearable
+                        isSearchable
+                        placeholder="Select or type category"
                     />
                     <input
                         type="text"
