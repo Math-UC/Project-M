@@ -1,23 +1,57 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Choose Your Dino</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .dino-container {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+
+    .dino {
+      width: 150px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .dino:hover {
+      transform: scale(1.05);
+    }
+
+    #continueBtn {
+      padding: 10px 20px;
+      font-size: 16px;
+      display: none;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Choose Your Dino!</h2>
 
-    <div class="dino-options">
-      <img src="images/dino1.png" class="dino" data-dino="red" alt="Red Dino">
-      <img src="images/dino2.png" class="dino" data-dino="blue" alt="Blue Dino">
-      <img src="images/dino3.png" class="dino" data-dino="green" alt="Green Dino">
-    </div>
+  <h1>Choose Your Dino</h1>
 
-    <input type="text" id="dinoName" placeholder="Name your dino (optional)">
-    <button id="continueBtn">Continue</button>
+  <div class="dino-container">
+    <img id="redDino" class="dino" src="red-neutral.png" alt="Red Dino" data-color="red">
+    <img id="blueDino" class="dino" src="blue-neutral.png" alt="Blue Dino" data-color="blue">
+    <img id="greenDino" class="dino" src="green-neutral.png" alt="Green Dino" data-color="green">
   </div>
 
-  <script src="choosedino.js"></script>
+  <p id="dinoNameDisplay"></p>
+
+  <button id="continueBtn" onclick="goToIntro()">Continue</button>
+
+  <script src="choose-dino.js"></script>
 </body>
 </html>
